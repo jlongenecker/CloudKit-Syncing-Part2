@@ -26,17 +26,131 @@ import CloudKit
 
 protocol NearbyLocationsResultsControllerDelegate {
   //add delegate methods here
+    func willBeginUpdating()
+    func establishmentAdd(establishment: Establishment, index: Int)
+    func establishmentUpdated(establishment: Establishment, index: Int)
+    func didEndUpdating(error: NSError!)
 }
 
 class NearbyLocationsResultsController {
-  
+  //1
   let db: CKDatabase //1
-  var predicate: NSPredicate? //2
-  let delegate: NearbyLocationsResultsControllerDelegate //3
-  var results = [Establishment]() //4
-  
+    
+   //2
+  var predicate: NSPredicate?
+    //3
+  let delegate: NearbyLocationsResultsControllerDelegate
+    //4
+  var results = [Establishment]()
+  //5
+    
+    
+    var resultsLimit = 30
+    var cursor: CKQueryCursor!
+    var startedGettingResults = false
+    let RecordType = "Establishment"
+    var inProgress = false
+    
+    
   init(delegate: NearbyLocationsResultsControllerDelegate) {
     self.delegate = delegate
     db = CKContainer.defaultContainer().publicCloudDatabase
   }
+    
+    
+    
+    func start() {
+        //1 
+        if inProgress {
+            return
+        }
+        inProgress = true
+        //2
+        let query = CKQuery(recordType: RecordType, predicate: predicate!)
+        let queryOp = CKQueryOperation(query: query)
+        
+        sendOperation(queryOp)
+    }
+    
+    
+    
+    func recordFetch(record:CKRecord!) {
+        //1
+        if !startedGettingResults {
+            startedGettingResults = true
+            dispatch_async(dispatch_get_main_queue()) {
+                self.delegate.willBeginUpdating()
+            }
+        }
+        var index = NSNotFound
+        var e: Establishment!
+        var newItem = true
+        
+        //2
+        for (idx,value) in (results).enumerate() {
+            if value.record.recordID == record.recordID {
+                index = idx
+                e = value
+                e.record = record
+                newItem = false
+                break
+            }
+        }
+        //3 
+        if index == NSNotFound {
+            e = Establishment(record: record, database: db)
+            results.append(e)
+            index = results.count - 1
+        }
+        dispatch_async(dispatch_get_main_queue()) {
+            //4
+            if newItem {
+                self.delegate.establishmentAdd(e, index: index)
+            } else {
+                self.delegate.establishmentUpdated(e, index: index)
+            }
+        }
+        
+    }
+    
+    func queryCompleted(cursor: CKQueryCursor!, error: NSError!) {
+        startedGettingResults = false
+        dispatch_async(dispatch_get_main_queue()) {
+            self.delegate.didEndUpdating(error)
+        }
+    }
+    
+    func fetchNextResults(cursor: CKQueryCursor) {
+        let queryOp = CKQueryOperation(cursor: cursor)
+        sendOperation(queryOp)
+    }
+    
+    func sendOperation(queryOp: CKQueryOperation) {
+        //1
+        queryOp.queryCompletionBlock = {
+            cursor, error in
+            //2
+            self.queryCompleted(cursor, error: error)
+            if (cursor != nil) {
+                //3
+                self.fetchNextResults(cursor!)
+            } else {
+                //4
+                self.inProgress = false
+            }
+        }
+        
+        queryOp.recordFetchedBlock = { record in
+            //5 
+            self.recordFetch(record)
+        }
+        
+        queryOp.resultsLimit = resultsLimit
+        //6
+        startedGettingResults = false
+        db.addOperation(queryOp)
+        
+    }
+    
+   
 }
