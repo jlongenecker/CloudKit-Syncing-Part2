@@ -64,7 +64,7 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
   
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
     if segue.identifier == "showDetail" {
-      let indexPath = self.tableView.indexPathForSelectedRow()!
+      let indexPath = self.tableView.indexPathForSelectedRow!
       let object = controller.results[indexPath.row]
      ((segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController).detailItem = object
     }
@@ -95,8 +95,8 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
     }
     
     var badges = [UIImage]()
-    badges.extend(object.changingTable().images())
-    badges.extend(object.seatingType().images())
+    badges.appendContentsOf(object.changingTable().images())
+    badges.appendContentsOf(object.seatingType().images())
     cell.badgeView.setBadges(badges)
     
     object.loadCoverPhoto { image in
@@ -166,11 +166,11 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
       }
     default:
       //do nothing
-      println("Other status")
+      print("Other status")
     }
   }
   
-  func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus)  {
+  func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus)  {
     switch status {
     case .NotDetermined:
       manager.requestWhenInUseAuthorization()
@@ -178,12 +178,12 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
       manager.startUpdatingLocation()
     default:
       //do nothing
-      println("Other status")
+      print("Other status")
     }
   }
   
-  func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
-    if let loc = locations?.last as? CLLocation {
+  func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    if let loc = locations.last as? CLLocation {
       refresh()
     }
   }

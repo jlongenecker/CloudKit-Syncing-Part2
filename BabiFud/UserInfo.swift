@@ -73,12 +73,12 @@ class UserInfo {
   
   func requestDiscoverability(completion: (discoverable: Bool) -> ()) {
     container.statusForApplicationPermission(
-      .PermissionUserDiscoverability) {
+      .UserDiscoverability) {
         status, error in
       if error != nil || status == CKApplicationPermissionStatus.Denied {
         completion(discoverable: false)
       } else {
-        self.container.requestApplicationPermission(.PermissionUserDiscoverability) { status, error in
+        self.container.requestApplicationPermission(.UserDiscoverability) { status, error in
           completion(discoverable: status == .Granted)
         }
       }

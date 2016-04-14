@@ -51,10 +51,10 @@ func upload(db: CKDatabase,
     
     db.saveRecord(establishment) { record, error in
       if error != nil {
-        println("error setting up record \(error)")
+        print("error setting up record \(error)")
         return
       }
-      println("saved: \(record)")
+      print("saved: \(record)")
       for rating in ratings {
         let ratingRecord = CKRecord(recordType: "Rating")
         ratingRecord.setObject(rating, forKey: "Rating")
@@ -63,7 +63,7 @@ func upload(db: CKDatabase,
         ratingRecord.setObject(ref, forKey: "Establishment")
         db.saveRecord(ratingRecord) { record, error in
           if error != nil {
-            println("error setting up record \(error)")
+            print("error setting up record \(error)")
             return
           }
         }
@@ -77,12 +77,12 @@ func uploadSampleData() {
   let db = container.publicCloudDatabase
   
   //Apple Campus location = 37.33182, -122.03118
-  upload(db, "pizza", "Caesar's Pizza Palace", 37.332, -122.03, ChangingTableLocation.Womens, SeatingType.HighChair | SeatingType.Booster, false, true, [0, 1, 2])
-  upload(db, "chinese", "King Wok", 37.1, -122.1, ChangingTableLocation.None, SeatingType.HighChair, true, false, [])
-  upload(db, "steak", "The Back Deck", 37.4, -122.03, ChangingTableLocation.Womens | ChangingTableLocation.Mens, SeatingType.HighChair | SeatingType.Booster, true, true, [5, 5, 4])
-  upload(db, "burgers", "Five Guys", 37.335, -122.028, ChangingTableLocation.Family, SeatingType.HighChair, false, true, [5, 5, 5, 5, 4, 2, 1, 1])
-  upload(db, "falafel", "Falafel King", 37.310, -122.03, ChangingTableLocation.None, SeatingType.None, true, false, [3, 3, 4])
-  upload(db, "coffee", "Common Coffee", 37.26, -122.038, ChangingTableLocation.Mens, SeatingType.Booster, true, false, [5, 4, 2])
-  upload(db, "vietnamese", "Sapa", 37.6, -122.026, ChangingTableLocation.None, SeatingType.Booster | SeatingType.HighChair, true, true, [])
-  upload(db, "italian", "Lolas", 37.0, -121.9, ChangingTableLocation.Womens, SeatingType.HighChair | SeatingType.Booster, false, false, [3, 3, 5, 1])
+  upload(db, imageName: "pizza", placeName: "Caesar's Pizza Palace", latitude: 37.332, longitude: -122.03, changingTable: ChangingTableLocation.Womens, seatType: SeatingType.HighChair | SeatingType.Booster, healthy: false, kidsMenu: true, ratings: [0, 1, 2])
+  upload(db, imageName: "chinese", placeName: "King Wok", latitude: 37.1, longitude: -122.1, changingTable: ChangingTableLocation.None, seatType: SeatingType.HighChair, healthy: true, kidsMenu: false, ratings: [])
+  upload(db, imageName: "steak", placeName: "The Back Deck", latitude: 37.4, longitude: -122.03, changingTable: ChangingTableLocation.Womens | ChangingTableLocation.Mens, seatType: SeatingType.HighChair | SeatingType.Booster, healthy: true, kidsMenu: true, ratings: [5, 5, 4])
+  upload(db, imageName: "burgers", placeName: "Five Guys", latitude: 37.335, longitude: -122.028, changingTable: ChangingTableLocation.Family, seatType: SeatingType.HighChair, healthy: false, kidsMenu: true, ratings: [5, 5, 5, 5, 4, 2, 1, 1])
+  upload(db, imageName: "falafel", placeName: "Falafel King", latitude: 37.310, longitude: -122.03, changingTable: ChangingTableLocation.None, seatType: SeatingType.None, healthy: true, kidsMenu: false, ratings: [3, 3, 4])
+  upload(db, imageName: "coffee", placeName: "Common Coffee", latitude: 37.26, longitude: -122.038, changingTable: ChangingTableLocation.Mens, seatType: SeatingType.Booster, healthy: true, kidsMenu: false, ratings: [5, 4, 2])
+  upload(db, imageName: "vietnamese", placeName: "Sapa", latitude: 37.6, longitude: -122.026, changingTable: ChangingTableLocation.None, seatType: SeatingType.Booster | SeatingType.HighChair, healthy: true, kidsMenu: true, ratings: [])
+  upload(db, imageName: "italian", placeName: "Lolas", latitude: 37.0, longitude: -121.9, changingTable: ChangingTableLocation.Womens, seatType: SeatingType.HighChair | SeatingType.Booster, healthy: false, kidsMenu: false, ratings: [3, 3, 5, 1])
 }

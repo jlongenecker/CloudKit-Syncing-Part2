@@ -90,7 +90,7 @@ class NotesTableViewController: UITableViewController {
           self.tableView.reloadData()
         }
       } else {
-        println("Error fetching notes: \(error)")
+        print("Error fetching notes: \(error)")
       }
     }
   }

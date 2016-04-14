@@ -24,7 +24,7 @@ import Foundation
 import CloudKit
 import MapKit
 
-struct ChangingTableLocation : RawOptionSetType, BooleanType {
+struct ChangingTableLocation : OptionSetType, BooleanType {
   var rawValue: UInt = 0
   var boolValue:Bool {
     get {
@@ -35,21 +35,21 @@ struct ChangingTableLocation : RawOptionSetType, BooleanType {
   init(nilLiteral: ()) { self.rawValue = 0 }
   func toRaw() -> UInt { return self.rawValue }
   static func convertFromNilLiteral() -> ChangingTableLocation { return .None}
-  static func fromRaw(raw: UInt) -> ChangingTableLocation? { return self(rawValue: raw) }
-  static func fromMask(raw: UInt) -> ChangingTableLocation { return self(rawValue: raw) }
-  static var allZeros: ChangingTableLocation { return self(rawValue: 0) }
+  static func fromRaw(raw: UInt) -> ChangingTableLocation? { return self.init(rawValue: raw) }
+  static func fromMask(raw: UInt) -> ChangingTableLocation { return self.init(rawValue: raw) }
+  static var allZeros: ChangingTableLocation { return self.init(rawValue: 0) }
 
-  static var None: ChangingTableLocation   { return self(rawValue: 0) }      //0
-  static var Mens: ChangingTableLocation   { return self(rawValue: 1 << 0) } //1
-  static var Womens: ChangingTableLocation { return self(rawValue: 1 << 1) } //2
-  static var Family: ChangingTableLocation { return self(rawValue: 1 << 2) } //4
+  static var None: ChangingTableLocation   { return self.init(rawValue: 0) }      //0
+  static var Mens: ChangingTableLocation   { return self.init(rawValue: 1 << 0) } //1
+  static var Womens: ChangingTableLocation { return self.init(rawValue: 1 << 1) } //2
+  static var Family: ChangingTableLocation { return self.init(rawValue: 1 << 2) } //4
   
   func images() -> [UIImage] {
     var images = [UIImage]()
-    if self & .Mens {
+    if self.intersect(.Mens) {
       images.append(UIImage(named: "man")!)
     }
-    if self & .Womens {
+    if self.intersect(.Womens) {
       images.append(UIImage(named: "woman")!)
     }
     
@@ -63,7 +63,7 @@ func & (lhs: ChangingTableLocation, rhs: ChangingTableLocation) -> ChangingTable
 func ^ (lhs: ChangingTableLocation, rhs: ChangingTableLocation) -> ChangingTableLocation { return ChangingTableLocation(rawValue: lhs.rawValue ^ rhs.rawValue) }
 
 
-struct SeatingType : RawOptionSetType, BooleanType {
+struct SeatingType : OptionSetType, BooleanType {
   var rawValue: UInt = 0
   var boolValue:Bool {
     get {
@@ -74,20 +74,20 @@ struct SeatingType : RawOptionSetType, BooleanType {
   init(nilLiteral: ()) { self.rawValue = 0 }
   func toRaw() -> UInt { return self.rawValue }
   static func convertFromNilLiteral() -> SeatingType { return .None}
-  static func fromRaw(raw: UInt) -> SeatingType? { return self(rawValue: raw) }
-  static func fromMask(raw: UInt) -> SeatingType { return self(rawValue: raw) }
-  static var allZeros: SeatingType { return self(rawValue: 0) }
+  static func fromRaw(raw: UInt) -> SeatingType? { return self.init(rawValue: raw) }
+  static func fromMask(raw: UInt) -> SeatingType { return self.init(rawValue: raw) }
+  static var allZeros: SeatingType { return self.init(rawValue: 0) }
   
-  static var None:      SeatingType { return self(rawValue: 0) }      //0
-  static var Booster:   SeatingType { return self(rawValue: 1 << 0) } //1
-  static var HighChair: SeatingType { return self(rawValue: 1 << 1) } //2
+  static var None:      SeatingType { return self.init(rawValue: 0) }      //0
+  static var Booster:   SeatingType { return self.init(rawValue: 1 << 0) } //1
+  static var HighChair: SeatingType { return self.init(rawValue: 1 << 1) } //2
   
   func images() -> [UIImage] {
     var images = [UIImage]()
-    if self & .Booster {
+    if self.intersect(.Booster) {
       images.append(UIImage(named: "booster")!)
     }
-    if self & .HighChair {
+    if self.intersect(.HighChair) {
       images.append(UIImage(named: "highchair")!)
     }
     
@@ -239,7 +239,7 @@ class Establishment : NSObject, MKAnnotation, Equatable {
       return location.coordinate
     }
   }
-  var title : String! {
+  var title : String? {
     get {
       return name
     }

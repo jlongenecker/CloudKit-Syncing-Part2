@@ -27,7 +27,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
   
   @IBOutlet var mapView: MKMapView!
   
-  func mapView(mapView: MKMapView!, regionWillChangeAnimated animated: Bool) {
+  func mapView(mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
     let region = mapView.region;
     
     
@@ -64,7 +64,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
   
   let pinIdentifier = "Pin"
   
-  func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
+  func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView! {
     var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(pinIdentifier)
     if pinView == nil {
       pinView = MKPinAnnotationView(annotation: annotation,

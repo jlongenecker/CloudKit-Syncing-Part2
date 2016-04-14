@@ -34,7 +34,7 @@ protocol ModelDelegate {
   func recordUpdated(indexPath:NSIndexPath!)
 }
 
-@objc class Model {
+class Model {
   
   class func sharedInstance() -> Model {
     return modelSingletonGlobal
@@ -78,7 +78,7 @@ protocol ModelDelegate {
       if error != nil {
         dispatch_async(dispatch_get_main_queue()) {
           self.delegate?.errorUpdating(error)
-          println("error loading: \(error)")
+          print("error loading: \(error)")
         }
       } else {
         self.items.removeAll(keepCapacity: true)
@@ -88,7 +88,7 @@ protocol ModelDelegate {
         }
         dispatch_async(dispatch_get_main_queue()) {
           //TODO  self.delegate?.modelUpdated()
-          println("model updated")
+          print("model updated")
         }
       }
     }
@@ -105,7 +105,7 @@ protocol ModelDelegate {
         var res = [Establishment]()
         if let records = results {
           for record in records {
-            let establishment = Establishment(record: record as! CKRecord, database:self.publicDB)
+            let establishment = Establishment(record: record , database:self.publicDB)
             res.append(establishment)
           }
         }

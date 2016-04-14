@@ -130,7 +130,7 @@ class DetailViewController: UITableViewController, UISplitViewControllerDelegate
       }
       
       detail.fetchNote() { note in
-        println("note \(note)")
+        print("note \(note)")
         if let noteText = note {
           dispatch_async(dispatch_get_main_queue()) {
             self.noteTextView.text = noteText
@@ -158,7 +158,7 @@ class DetailViewController: UITableViewController, UISplitViewControllerDelegate
           record, error in
           if error != nil {
             //low priority error on saving the rating
-            println("error saving rating: \(error)")
+            print("error saving rating: \(error)")
           } else {
             dispatch_async(dispatch_get_main_queue()) {
               //use yellow to signify the user's rating
@@ -222,7 +222,7 @@ class DetailViewController: UITableViewController, UISplitViewControllerDelegate
     self.presentViewController(imagePicker, animated: true, completion: nil)
   }
   
-  func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
+  func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
     dismissViewControllerAnimated(true, completion: nil)
     if let selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
@@ -238,7 +238,10 @@ class DetailViewController: UITableViewController, UISplitViewControllerDelegate
 
     if let filePath = fileArray.lastObject?.path {
       if !fileManager.fileExistsAtPath(filePath!) {
-        fileManager.createDirectoryAtPath(filePath!, withIntermediateDirectories: true, attributes: nil, error: nil)
+        do {
+          try fileManager.createDirectoryAtPath(filePath!, withIntermediateDirectories: true, attributes: nil)
+        } catch _ {
+        }
       }
     }
 
@@ -248,7 +251,7 @@ class DetailViewController: UITableViewController, UISplitViewControllerDelegate
   func addNewPhotoToScrollView(photo:UIImage) {
     let newImView = UIImageView(image: photo)
     let offset = self.detailItem.assetCount * 70 + 10
-    var frame: CGRect = CGRect(x: offset, y: 0, width: 60, height: 60)
+    let frame: CGRect = CGRect(x: offset, y: 0, width: 60, height: 60)
     newImView.frame = frame
     newImView.clipsToBounds = true
     newImView.layer.cornerRadius = 8
@@ -262,7 +265,14 @@ class DetailViewController: UITableViewController, UISplitViewControllerDelegate
   let fileURL = generateFileURL()
   let data = UIImageJPEGRepresentation(photo, 0.9)
   var error : NSError?
-  let wrote = data.writeToURL(fileURL, options: .AtomicWrite, error: &error)
+  let wrote: Bool
+  do {
+    try data.writeToURL(fileURL, options: .AtomicWrite)
+    wrote = true
+  } catch var error1 as NSError {
+    error = error1
+    wrote = false
+  }
     
   if (error != nil) {
     UIAlertView(title: "Error Saving Photo",
@@ -285,7 +295,10 @@ class DetailViewController: UITableViewController, UISplitViewControllerDelegate
         if error == nil {
           self.addNewPhotoToScrollView(photo)
         }
-        NSFileManager.defaultManager().removeItemAtURL(fileURL, error: nil)
+        do {
+          try NSFileManager.defaultManager().removeItemAtURL(fileURL)
+        } catch _ {
+        }
       }
     }
   }
