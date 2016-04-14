@@ -44,7 +44,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                             longitude: upperLeft.longitude)
     let distance = center.distanceFromLocation(corner)
     
-    let mapCenter = CLLocation(coordinate: mapView.centerCoordinate, altitude: 0, horizontalAccuracy: 0, verticalAccuracy: 0, timestamp: nil)
+    let mapCenter = CLLocation(coordinate: mapView.centerCoordinate, altitude: 0, horizontalAccuracy: 0, verticalAccuracy: 0, timestamp: NSDate.init())
     
     Model.sharedInstance().fetchEstablishments(mapCenter, radiusInMeters: distance) {
       results, error in
@@ -69,9 +69,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     if pinView == nil {
       pinView = MKPinAnnotationView(annotation: annotation,
                                         reuseIdentifier: pinIdentifier)
-      pinView.canShowCallout = true
+      pinView!.canShowCallout = true
     }
-    pinView.annotation = annotation
+    pinView!.annotation = annotation
     (annotation as! Establishment).loadCoverPhoto { photo in
       if photo != nil {
         UIGraphicsBeginImageContext(CGSize(width: 30,height: 30))
@@ -79,7 +79,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         let smallImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         let imView = UIImageView(image: smallImage)
-        pinView.leftCalloutAccessoryView = imView
+        pinView!.leftCalloutAccessoryView = imView
       }
     }
     return pinView

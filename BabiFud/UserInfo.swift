@@ -34,8 +34,8 @@ class UserInfo {
   }
   
   func loggedInToICloud(completion : (accountStatus : CKAccountStatus, error : NSError?) -> ()) {
-    container.accountStatusWithCompletionHandler() { (status : CKAccountStatus, error : NSError!) in
-      completion(accountStatus: status, error: error)
+    container.accountStatusWithCompletionHandler() { status, error in
+        completion(accountStatus: status, error: error)
     }
   }
   
@@ -67,8 +67,9 @@ class UserInfo {
   
   func userInfo(recordID: CKRecordID!,
     completion:(userInfo: CKDiscoveredUserInfo!, error: NSError!)->()) {
-       container.discoverUserInfoWithUserRecordID(recordID,
-        completionHandler:completion)
+    container.discoverUserInfoWithUserRecordID(recordID) { discoveredUserInfo, error in
+        completion(userInfo: discoveredUserInfo, error: error)
+    }
   }
   
   func requestDiscoverability(completion: (discoverable: Bool) -> ()) {

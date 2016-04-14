@@ -100,7 +100,7 @@ func | (lhs: SeatingType, rhs: SeatingType) -> SeatingType { return SeatingType(
 func & (lhs: SeatingType, rhs: SeatingType) -> SeatingType { return SeatingType(rawValue: lhs.rawValue & rhs.rawValue) }
 func ^ (lhs: SeatingType, rhs: SeatingType) -> SeatingType { return SeatingType(rawValue: lhs.rawValue ^ rhs.rawValue) }
 
-class Establishment : NSObject, MKAnnotation, Equatable {
+class Establishment : NSObject, MKAnnotation {
   
   var record : CKRecord! {
     didSet {
@@ -163,7 +163,7 @@ class Establishment : NSObject, MKAnnotation, Equatable {
         if error != nil {
           completion(rating: 0, isUser: false)
         } else {
-          let resultsArray = results as NSArray
+          let resultsArray = results! as NSArray
           // 3
           if let rating = resultsArray.valueForKeyPath("@avg.Rating") as? Double {
             completion(rating: rating, isUser: false)
@@ -187,9 +187,9 @@ class Establishment : NSObject, MKAnnotation, Equatable {
     //Intermediate Extension Point - with cursors
     database.performQuery(query, inZoneWithID: nil) { results, error in
       if error == nil {
-        self.assetCount = results.count
+        self.assetCount = results!.count
       }
-      completion(assets: results as! [CKRecord])
+      completion(assets: results! as [CKRecord])
     }
   }
   
@@ -213,24 +213,23 @@ class Establishment : NSObject, MKAnnotation, Equatable {
   
   func loadCoverPhoto(completion:(photo: UIImage!) -> ()) {
     // 1
-    dispatch_async(
-      dispatch_get_global_queue(
-        DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)){
-          var image: UIImage!
-          // 2
-          if let asset = self.record.objectForKey("CoverPhoto") as? CKAsset {
-            // 3
-            if let url = asset.fileURL {
-              if let imageData = NSData(contentsOfFile: url.path!) {
-                // 4
-                image = UIImage(data: imageData)
-              }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
+        var image: UIImage!
+        //2
+        if let asset = self.record.objectForKey("CoverPhoto") as? CKAsset {
+            let url = asset.fileURL
+            let path = url.path
+            if let path = path {
+                if let imageData = NSData(contentsOfFile: path) {
+                    //4
+                    image = UIImage(data: imageData)
+                }
             }
-          }
-          // 5
-          completion(photo: image)
+        }
+        completion(photo: image)
     }
-  }
+    }
+
   
   //MARK: - map annotation
   

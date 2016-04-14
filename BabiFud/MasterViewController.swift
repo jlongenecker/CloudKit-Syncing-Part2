@@ -49,7 +49,7 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
     
     if let split = self.splitViewController {
       let controllers = split.viewControllers
-      self.detailViewController = controllers[controllers.endIndex-1].topViewController as? DetailViewController
+      self.detailViewController = controllers[controllers.endIndex-1] as? DetailViewController
     }
     
     setupLocationManager()
@@ -133,7 +133,7 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
     //replace stub
   }
   
-  func establishmentAdded(establishment: Establishment, index: Int) {
+  func establishmentAdd(establishment: Establishment, index: Int) {
     //replace stub
   }
   
@@ -183,7 +183,7 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
   }
   
   func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    if let loc = locations.last as? CLLocation {
+    if let loc = locations.last {
       refresh()
     }
   }

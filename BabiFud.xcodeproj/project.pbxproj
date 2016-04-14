@@ -324,6 +324,7 @@
 					};
 					27DA777519672452005FFA76 = {
 						CreatedOnToolsVersion = 6.0;
+						DevelopmentTeam = 679ME73ZU2;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 0;
@@ -583,6 +584,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = BabiFud/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnlongenecker.cloudKitTest.BabiFood;
 				PRODUCT_NAME = BabiFood;
 				PROVISIONING_PROFILE = "";
 			};
@@ -598,6 +600,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = BabiFud/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnlongenecker.cloudKitTest.BabiFood;
 				PRODUCT_NAME = BabiFood;
 				PROVISIONING_PROFILE = "";
 			};

@@ -36,7 +36,7 @@ func upload(db: CKDatabase,
   kidsMenu: Bool,
   ratings: [UInt]) {
     let imURL = NSBundle.mainBundle().URLForResource(imageName, withExtension: "jpeg")
-    let coverPhoto = CKAsset(fileURL: imURL)
+    let coverPhoto = CKAsset(fileURL: imURL!)
     let location = CLLocation(latitude: latitude, longitude: longitude)
     
     let establishment = CKRecord(recordType: "Establishment")
@@ -59,7 +59,7 @@ func upload(db: CKDatabase,
         let ratingRecord = CKRecord(recordType: "Rating")
         ratingRecord.setObject(rating, forKey: "Rating")
         
-        let ref = CKReference(record: record, action: CKReferenceAction.DeleteSelf)
+        let ref = CKReference(record: record!, action: CKReferenceAction.DeleteSelf)
         ratingRecord.setObject(ref, forKey: "Establishment")
         db.saveRecord(ratingRecord) { record, error in
           if error != nil {

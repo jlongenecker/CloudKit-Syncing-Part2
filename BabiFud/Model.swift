@@ -77,12 +77,12 @@ class Model {
       results, error in
       if error != nil {
         dispatch_async(dispatch_get_main_queue()) {
-          self.delegate?.errorUpdating(error)
+          self.delegate?.errorUpdating(error!)
           print("error loading: \(error)")
         }
       } else {
         self.items.removeAll(keepCapacity: true)
-        for record in results{
+        for record in results!{
           let establishment = Establishment(record: record as! CKRecord, database:self.publicDB)
           self.items.append(establishment)
         }
@@ -154,8 +154,8 @@ class Model {
     privateDB.performQuery(query, inZoneWithID: nil) { //2
       results, error in
       var note: String!
-      if results.count > 0 {
-        note = results[0].objectForKey("Note") as! String //3
+      if results!.count > 0 {
+        note = results![0].objectForKey("Note") as! String //3
       }
       completion(note: note, error: error)
     }

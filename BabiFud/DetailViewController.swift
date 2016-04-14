@@ -236,13 +236,14 @@ class DetailViewController: UITableViewController, UISplitViewControllerDelegate
     let fileArray: NSArray = fileManager.URLsForDirectory(.CachesDirectory, inDomains: .UserDomainMask)
     let fileURL = fileArray.lastObject?.URLByAppendingPathComponent(NSUUID().UUIDString).URLByAppendingPathExtension("jpg")
 
-    if let filePath = fileArray.lastObject?.path {
-      if !fileManager.fileExistsAtPath(filePath!) {
-        do {
-          try fileManager.createDirectoryAtPath(filePath!, withIntermediateDirectories: true, attributes: nil)
-        } catch _ {
+    if let file = fileArray.lastObject as? NSURL {
+        let filePath = file.path
+        if !fileManager.fileExistsAtPath(filePath!) {
+            do {
+                try fileManager.createDirectoryAtPath(filePath!, withIntermediateDirectories: true, attributes: nil)
+            } catch _ {
+            }
         }
-      }
     }
 
     return fileURL!
@@ -267,7 +268,7 @@ class DetailViewController: UITableViewController, UISplitViewControllerDelegate
   var error : NSError?
   let wrote: Bool
   do {
-    try data.writeToURL(fileURL, options: .AtomicWrite)
+    try data!.writeToURL(fileURL, options: .AtomicWrite)
     wrote = true
   } catch var error1 as NSError {
     error = error1
