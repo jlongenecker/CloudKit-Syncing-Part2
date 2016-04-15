@@ -34,6 +34,9 @@ protocol NearbyLocationsResultsControllerDelegate {
 
 class NearbyLocationsResultsController {
     
+    //Subscription Variables
+    var subscriptionID = "subscription_id"
+    var subscribed = false
     
    
   //1
@@ -61,7 +64,32 @@ class NearbyLocationsResultsController {
      print("NearbyLocationsResultsController called")
   }
     
+    //subscription function
     
+    func subscribe() {
+        //1
+        if subscribed {
+            return
+        }
+        //2 See options in step 3
+        
+        //3
+        let subscription = CKSubscription(recordType: RecordType, predicate: predicate!, options:  [.FiresOnRecordCreation, .FiresOnRecordUpdate, .FiresOnRecordDeletion])
+        
+        //4
+        subscription.notificationInfo = CKNotificationInfo()
+        subscription.notificationInfo?.alertBody = "Test" //added test
+        
+        //5
+        db.saveSubscription(subscription) { subscription, error in
+            if (error != nil) {
+                print("error subscribing: \(error)")
+            } else {
+                self.subscribed = true
+                print("SUBSCRIBED")
+            }
+        }
+    }
     
     func start() {
         //1 
@@ -75,6 +103,7 @@ class NearbyLocationsResultsController {
         
         sendOperation(queryOp)
         print("NearbyLocationsResultsController Start method called")
+        subscribe()
     }
     
     

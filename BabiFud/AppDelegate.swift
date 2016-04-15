@@ -41,9 +41,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     let masterNav = splitViewController.viewControllers[0] as! UINavigationController
     masterViewController = masterNav.topViewController as! MasterViewController
+    
+    application.registerForRemoteNotifications()
 
     return true
   }
+    
+    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken:NSData) {
+        print("Registered for Post notifications with token: \(deviceToken)")
+    }
+    
+    func application(application: UIApplication, didFailToRegisterForRemoteNotificationswithError error: NSError) {
+        print("Push subscription failed: \(error)")
+    }
   
 }
 

@@ -322,14 +322,14 @@
 				TargetAttributes = {
 					27B38EBA1977637200385025 = {
 						CreatedOnToolsVersion = 6.0;
-						DevelopmentTeam = TEP7Q2ZMYD;
+						DevelopmentTeam = 679ME73ZU2;
 					};
 					27DA777519672452005FFA76 = {
 						CreatedOnToolsVersion = 6.0;
 						DevelopmentTeam = 679ME73ZU2;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
-								enabled = 0;
+								enabled = 1;
 							};
 							com.apple.Maps.iOS = {
 								enabled = 1;
@@ -470,6 +470,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -491,6 +492,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
