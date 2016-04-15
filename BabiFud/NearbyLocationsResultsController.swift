@@ -33,6 +33,9 @@ protocol NearbyLocationsResultsControllerDelegate {
 }
 
 class NearbyLocationsResultsController {
+    
+    
+   
   //1
   let db: CKDatabase //1
     
@@ -45,7 +48,7 @@ class NearbyLocationsResultsController {
   //5
     
     
-    var resultsLimit = 30
+    var resultsLimit = 2
     var cursor: CKQueryCursor!
     var startedGettingResults = false
     let RecordType = "Establishment"
@@ -55,6 +58,7 @@ class NearbyLocationsResultsController {
   init(delegate: NearbyLocationsResultsControllerDelegate) {
     self.delegate = delegate
     db = CKContainer.defaultContainer().publicCloudDatabase
+     print("NearbyLocationsResultsController called")
   }
     
     
@@ -70,11 +74,13 @@ class NearbyLocationsResultsController {
         let queryOp = CKQueryOperation(query: query)
         
         sendOperation(queryOp)
+        print("NearbyLocationsResultsController Start method called")
     }
     
     
     
     func recordFetch(record:CKRecord!) {
+        print("Record Fetch Begins")
         //1
         if !startedGettingResults {
             startedGettingResults = true
@@ -134,6 +140,7 @@ class NearbyLocationsResultsController {
             if (cursor != nil) {
                 //3
                 self.fetchNextResults(cursor!)
+                print("Cursor: \(cursor)")
             } else {
                 //4
                 self.inProgress = false

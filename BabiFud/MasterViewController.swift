@@ -31,7 +31,7 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
   var locationManager: CLLocationManager!
   var controller: NearbyLocationsResultsController!
   
-  let FilterDistance: CLLocationDistance = 10000.0 //10km
+  let FilterDistance: CLLocationDistance = 56000.0 //10km
   
   override func awakeFromNib() {
     super.awakeFromNib()
@@ -47,6 +47,7 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
     let model: Model = Model.sharedInstance()
     self.controller = NearbyLocationsResultsController(delegate: self)
     
+    
     if let split = self.splitViewController {
       let controllers = split.viewControllers
       self.detailViewController = controllers[controllers.endIndex-1] as? DetailViewController
@@ -57,8 +58,9 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
 
     //setup a refresh control
     refreshControl = UIRefreshControl()
-    refreshControl?.addTarget(self, action: "refresh", forControlEvents: .ValueChanged)
+    refreshControl?.addTarget(self, action: #selector(refresh), forControlEvents: .ValueChanged)
   }
+    
   
   //MARK:- Segues
   
@@ -123,22 +125,48 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
   
   func refresh() {
     //replace stub here
+    var location = locationManager.location
+    //1 
+    if location == nil {
+        //Using Apple as our default location
+        location = CLLocation(latitude: 182, longitude: -122.03118)
+    }
+    
+    //2
+    let predicate = Model.sharedInstance().createLocationPredicate(location!, radiusInMeters: FilterDistance)
+    controller.predicate = predicate
+    
+    //3 
+    controller.start()
+    
   }
   
   func willBeginUpdating() {
     //replace stub
+    
+    //1
+    tableView.beginUpdates()
   }
 
   func establishmentUpdated(establishment: Establishment, index: Int) {
     //replace stub
+    //2 
+    let indexPath = NSIndexPath(forRow: index, inSection: 0)
+    tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
   }
   
   func establishmentAdd(establishment: Establishment, index: Int) {
     //replace stub
+    //3 
+    let indexPath = NSIndexPath(forRow: index, inSection: 0)
+    tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
   }
   
   func didEndUpdating(error: NSError!) {
     //replace stub
+    //4
+    tableView.endUpdates()
+    refreshControl?.endRefreshing()
   }
 
   func establishmentRemovedAtIndex(index: Int)  {
@@ -178,7 +206,7 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
       manager.startUpdatingLocation()
     default:
       //do nothing
-      print("Other status")
+      print("Other status2")
     }
   }
   

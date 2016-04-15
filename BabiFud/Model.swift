@@ -68,8 +68,12 @@ class Model {
     }
     return e
   }
+    
+
   
   func fetchEstablishments(location:CLLocation, radiusInMeters:CLLocationDistance) {
+    
+      print("Method called")
     let locationPredicate = createLocationPredicate(location, radiusInMeters: radiusInMeters)
     let query = CKQuery(recordType: "Establishment",
                         predicate:  locationPredicate) //3
@@ -98,6 +102,7 @@ class Model {
                            radiusInMeters:CLLocationDistance,
                            completion:    (results:[Establishment]!, error:NSError!) -> ()) {
 
+    print("methodcalled")
       let locationPredicate = createLocationPredicate(location, radiusInMeters: radiusInMeters)
       let query = CKQuery(recordType: "Establishment", predicate: locationPredicate) //3
       publicDB.performQuery(query, inZoneWithID: nil) { //4
@@ -117,7 +122,7 @@ class Model {
   }
   
   func createLocationPredicate(location: CLLocation, radiusInMeters:CLLocationDistance) -> NSPredicate {
-    let radiusInKilometers = radiusInMeters / 1000.0
+    let radiusInKilometers = radiusInMeters
 
     return NSPredicate(format: "distanceToLocation:fromLocation:(%K,%@) < %f",
       "Location",

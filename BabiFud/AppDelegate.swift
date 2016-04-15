@@ -32,7 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   
   func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool {
     
-//    uploadSampleData()
+   //uploadSampleData()
     
     let navBarController = self.window!.rootViewController as! UITabBarController
     let splitViewController = navBarController.viewControllers![0] as! UISplitViewController
