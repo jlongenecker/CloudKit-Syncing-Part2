@@ -132,11 +132,13 @@ class NearbyLocationsResultsController {
     }
     
     func sendOperation(queryOp: CKQueryOperation) {
+        print("Send Operation Begins")
         //1
         queryOp.queryCompletionBlock = {
             cursor, error in
             //2
             self.queryCompleted(cursor, error: error)
+            print("error: \(error)")
             if (cursor != nil) {
                 //3
                 self.fetchNextResults(cursor!)
