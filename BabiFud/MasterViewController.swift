@@ -171,6 +171,8 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
 
   func establishmentRemovedAtIndex(index: Int)  {
     //replace stub
+    let indexPath = NSIndexPath(forRow: index, inSection: 0)
+    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
   }
 
   ////////////////////////////////////////////////////////////////////////////////////

@@ -30,6 +30,7 @@ protocol NearbyLocationsResultsControllerDelegate {
     func establishmentAdd(establishment: Establishment, index: Int)
     func establishmentUpdated(establishment: Establishment, index: Int)
     func didEndUpdating(error: NSError!)
+    func establishmentRemovedAtIndex(index: Int)
 }
 
 class NearbyLocationsResultsController {
@@ -90,6 +91,37 @@ class NearbyLocationsResultsController {
             }
         }
     }
+    
+    //This is just a convenience method to determine if the item passed into it is already stored in the array of establishments. After all, you can’t remove an object that doesn’t exist.
+    func itemMatching(recordID: CKRecordID) -> (item: Establishment!, index: Int) {
+        var index = NSNotFound
+        var e: Establishment!
+        for (idx, value) in results.enumerate() {
+            if value.record.recordID == recordID {
+                index = idx
+                e = value
+                break
+            }
+        }
+        return (e, index: index)
+    }
+    
+    func remove(recordID: CKRecordID) {
+        dispatch_async(dispatch_get_main_queue()) {
+            //1
+            var (e, index) = self.itemMatching(recordID)
+            //2
+            if index == NSNotFound {
+                return
+            }
+            self.delegate.willBeginUpdating()
+            //3
+            self.results.removeAtIndex(index)
+            self.delegate.establishmentRemovedAtIndex(index)
+            self.delegate.didEndUpdating(nil)
+        }
+    }
+    
     
     func start() {
         //1 
@@ -189,6 +221,8 @@ class NearbyLocationsResultsController {
         db.addOperation(queryOp)
         
     }
+    
+    
     
    
 }
