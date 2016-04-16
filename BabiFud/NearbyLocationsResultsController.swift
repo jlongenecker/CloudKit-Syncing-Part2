@@ -87,6 +87,7 @@ class NearbyLocationsResultsController {
                 print("error subscribing: \(error)")
             } else {
                 self.subscribed = true
+                self.listenForBecomeActive()
                 print("SUBSCRIBED")
             }
         }
@@ -168,6 +169,34 @@ class NearbyLocationsResultsController {
     
     
     
+    func getOustandingNotifications() {
+        //1
+        let op = CKFetchNotificationChangesOperation(previousServerChangeToken: nil)
+        //2 
+        op.notificationChangedBlock = {
+            notification in
+            if let ckNotification = notification as? CKQueryNotification {
+                self.handleNotification(ckNotification)
+            }
+        }
+        
+        op.fetchNotificationChangesCompletionBlock = {
+            serverChangeToken, error in
+            //3
+            if error != nil {
+                print("error fetching notifications \(error)")
+            }
+        }
+        //4 
+        CKContainer.defaultContainer().addOperation(op)
+        
+    }
+    
+    func listenForBecomeActive() {
+        NSNotificationCenter.defaultCenter().addObserverForName(UIApplicationDidBecomeActiveNotification, object: nil, queue: NSOperationQueue.mainQueue()) { notification in
+            self.getOustandingNotifications()
+        }
+    }
     
     
     func start() {
@@ -183,6 +212,7 @@ class NearbyLocationsResultsController {
         sendOperation(queryOp)
         print("NearbyLocationsResultsController Start method called")
         subscribe()
+        getOustandingNotifications()
     }
     
     
