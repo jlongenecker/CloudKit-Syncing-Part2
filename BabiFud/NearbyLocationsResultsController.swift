@@ -274,6 +274,20 @@ class NearbyLocationsResultsController {
         //1
         queryOp.queryCompletionBlock = {
             cursor, error in
+            
+            if isRetryableCkError(error) {
+                let userInfo: NSDictionary = (error?.userInfo)!
+                //2
+                if let retryAfter = userInfo[CKErrorRetryAfterKey] as? NSNumber {
+                    let delay = retryAfter.doubleValue * Double(NSEC_PER_SEC)
+                    let time = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
+                    //3
+                    dispatch_after(time, dispatch_get_main_queue()) {
+                        self.sendOperation(queryOp)
+                    }
+                    return
+                }
+            }
             //2
             self.queryCompleted(cursor, error: error)
             print("error: \(error)")
@@ -298,8 +312,21 @@ class NearbyLocationsResultsController {
         db.addOperation(queryOp)
         
     }
-    
-    
-    
    
+}
+
+func isRetryableCkError(error:NSError?) -> Bool {
+    var isRetryable = false
+    //1 
+    if let err = error {
+        //2
+        let isErrorDomain = err.domain == CKErrorDomain
+        let errorCode: Int = err.code
+        //3
+        let isUnavailable = errorCode == CKErrorCode.ServiceUnavailable.rawValue
+        let isRateLimited = errorCode == CKErrorCode.RequestRateLimited.rawValue
+        let errorCodeIsRetryable = isUnavailable || isRateLimited
+        isRetryable = error != nil && isErrorDomain && errorCodeIsRetryable
+    }
+    return isRetryable
 }
