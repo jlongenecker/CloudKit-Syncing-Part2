@@ -124,10 +124,10 @@ class Model {
   func createLocationPredicate(location: CLLocation, radiusInMeters:CLLocationDistance) -> NSPredicate {
     let radiusInKilometers = radiusInMeters
 
-    return NSPredicate(format: "distanceToLocation:fromLocation:(%K,%@) < %f",
+    return NSPredicate(value: true)/*format: "distanceToLocation:fromLocation:(%K,%@) < %f",
       "Location",
       location,
-      radiusInKilometers)
+      radiusInKilometers)*/
   }
   
   //MARK: - Streaming Results

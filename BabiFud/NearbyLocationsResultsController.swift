@@ -123,6 +123,53 @@ class NearbyLocationsResultsController {
     }
     
     
+    func fetchAndUpdateOrAdd(recordID: CKRecordID) {
+        db.fetchRecordWithID(recordID) { record, error in
+            if error == nil {
+                var (e, index) = self.itemMatching(recordID)
+                if index == NSNotFound {
+                    e = Establishment(record: record!, database: self.db)
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.delegate.willBeginUpdating()
+                        self.results.append(e)
+                        self.delegate.establishmentAdd(e, index: self.results.count-1)
+                        self.delegate.didEndUpdating(nil)
+                    }
+                } else {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.delegate.willBeginUpdating()
+                        e.record = record
+                        self.delegate.establishmentUpdated(e, index: index)
+                        self.delegate.didEndUpdating(nil)
+                    }
+                }
+            }
+            }
+    }
+    
+    
+    func handleNotification(note: CKQueryNotification) {
+        let recordID = note.recordID
+        switch note.queryNotificationReason {
+        case .RecordDeleted:
+            remove(note.recordID!)
+        case .RecordCreated:
+            fetchAndUpdateOrAdd(note.recordID!)
+        case .RecordUpdated:
+            fetchAndUpdateOrAdd(note.recordID!)
+        }
+        markNotificationAsRead([note.notificationID!])
+    }
+    
+    func markNotificationAsRead(notes: [CKNotificationID]) {
+        let markOp = CKMarkNotificationsReadOperation(notificationIDsToMarkRead: notes)
+        CKContainer.defaultContainer().addOperation(markOp)
+    }
+    
+    
+    
+    
+    
     func start() {
         //1 
         if inProgress {

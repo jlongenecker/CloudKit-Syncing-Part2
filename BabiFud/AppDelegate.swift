@@ -54,6 +54,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFailToRegisterForRemoteNotificationswithError error: NSError) {
         print("Push subscription failed: \(error)")
     }
-  
+    
+    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+        let note = CKQueryNotification(fromRemoteNotificationDictionary: userInfo as! [String: NSObject])
+        masterViewController.controller.handleNotification(note)
+    }
+
 }
 
