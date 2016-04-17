@@ -313,6 +313,28 @@ class NearbyLocationsResultsController {
         
     }
    
+    //1 
+    func cachePath() -> String {
+        let paths = NSSearchPathForDirectoriesInDomains(.CachesDirectory, .UserDomainMask, true)
+            // let path = paths[0].stringByAppendingPathComponent("establishments.cache")
+        let path = paths[0].stringByAppendingString("establishments.cache")
+        return path
+    }
+    
+    func persist() {
+        let data = NSMutableData()
+        //2
+        let archiver = NSKeyedArchiver(forWritingWithMutableData: data)
+        //3
+        archiver.encodeRootObject(results)
+        archiver.finishEncoding()
+        //4
+        data.writeToFile(cachePath(), atomically: true)
+        
+    }
+    
+    
+    
 }
 
 func isRetryableCkError(error:NSError?) -> Bool {

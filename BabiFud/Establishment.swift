@@ -100,7 +100,7 @@ func | (lhs: SeatingType, rhs: SeatingType) -> SeatingType { return SeatingType(
 func & (lhs: SeatingType, rhs: SeatingType) -> SeatingType { return SeatingType(rawValue: lhs.rawValue & rhs.rawValue) }
 func ^ (lhs: SeatingType, rhs: SeatingType) -> SeatingType { return SeatingType(rawValue: lhs.rawValue ^ rhs.rawValue) }
 
-class Establishment : NSObject, MKAnnotation {
+class Establishment : NSObject, MKAnnotation, NSCoding {
   
   var record : CKRecord! {
     didSet {
@@ -145,12 +145,54 @@ class Establishment : NSObject, MKAnnotation {
     self.name = record.objectForKey("Name") as! String
     self.location = record.objectForKey("Location") as! CLLocation
   }
+    
+    
+    required init(coder aDecoder: NSCoder) {
+        super.init()
+        //1 
+        let recordName = aDecoder.decodeObjectForKey("recordName") as! String
+        //2 
+        let recordID = CKRecordID(recordName: recordName)
+        //3 
+        self.record = CKRecord(recordType: "Establishment", recordID: recordID)
+        self.database = Model.sharedInstance().publicDB
+        
+        let kidsMenu = aDecoder.decodeBoolForKey("KidsMenu")
+        self.record.setObject(kidsMenu, forKey: "KidsMenu")
+        
+        let healthyOption = aDecoder.decodeBoolForKey("HealthyOption")
+        self.record.setObject(healthyOption, forKey: "HealthyOption")
+        
+        //4
+        let lat = aDecoder.decodeDoubleForKey("latitude")
+        let lon = aDecoder.decodeDoubleForKey("longitude")
+        
+        //5
+        let decodedLocation = CLLocation(latitude: lat, longitude: lon)
+        self.record.setObject(decodedLocation, forKey: "Location")
+        self.location = decodedLocation
+        
+        self.name = aDecoder.decodeObjectForKey("name") as! String
+        self.record.setObject(name, forKey: "Name")
+    }
   
   func fetchRating(completion: (rating: Double, isUser: Bool) -> ()) {
     Model.sharedInstance().userInfo.userID() { userRecord, error in
       self.fetchRating(userRecord, completion: completion)
     }
   }
+    
+    func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(record.recordID.recordName, forKey: "recordName")
+        
+        aCoder.encodeBool(kidsMenu, forKey: "KidsMenu")
+        aCoder.encodeBool(kidsMenu, forKey: "HealthyOption")
+        
+        aCoder.encodeDouble(location.coordinate.latitude, forKey: "latitude")
+        aCoder.encodeDouble(location.coordinate.longitude, forKey: "longitude")
+        
+        aCoder.encodeObject(name, forKey: "name")
+    }
   
   func fetchRating(userRecord: CKRecordID!,
     completion: (rating: Double, isUser: Bool) -> ()) {
