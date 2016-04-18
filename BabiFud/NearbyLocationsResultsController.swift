@@ -31,6 +31,7 @@ protocol NearbyLocationsResultsControllerDelegate {
     func establishmentUpdated(establishment: Establishment, index: Int)
     func didEndUpdating(error: NSError!)
     func establishmentRemovedAtIndex(index: Int)
+    func controllerUpdated()
 }
 
 class NearbyLocationsResultsController {
@@ -298,6 +299,7 @@ class NearbyLocationsResultsController {
             } else {
                 //4
                 self.inProgress = false
+                self.persist()
             }
         }
         
@@ -333,7 +335,24 @@ class NearbyLocationsResultsController {
         
     }
     
-    
+    func loadCache() {
+        let path = cachePath()
+        //1 
+        if let data = NSData(contentsOfFile: path) where data.length > 0 {
+            let decoder = NSKeyedUnarchiver(forReadingWithData: data)
+            //2
+            let object: AnyObject! = decoder.decodeObject()
+            if object != nil {
+                //3
+                self.results = object as! [Establishment]
+                dispatch_async(dispatch_get_main_queue()) {
+                    //4 
+                    self.delegate.controllerUpdated()
+                }
+            }
+            
+        }
+    }
     
 }
 

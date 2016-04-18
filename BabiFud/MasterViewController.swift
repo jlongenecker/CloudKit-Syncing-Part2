@@ -53,6 +53,7 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
       self.detailViewController = controllers[controllers.endIndex-1] as? DetailViewController
     }
     
+    controller.loadCache()
     setupLocationManager()
     
 
@@ -217,5 +218,10 @@ class MasterViewController: UITableViewController, CLLocationManagerDelegate, Ne
       refresh()
     }
   }
+    
+    func controllerUpdated() {
+        tableView.reloadData()
+        refreshControl?.endRefreshing()
+    }
 }
 
