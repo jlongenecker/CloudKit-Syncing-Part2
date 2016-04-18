@@ -253,25 +253,96 @@ class Establishment : NSObject, MKAnnotation, NSCoding {
     return SeatingType(rawValue: val)
   }
   
-  func loadCoverPhoto(completion:(photo: UIImage!) -> ()) {
-    // 1
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
-        var image: UIImage!
-        //2
-        if let asset = self.record.objectForKey("CoverPhoto") as? CKAsset {
-            let url = asset.fileURL
-            let path = url.path
-            if let path = path {
-                if let imageData = NSData(contentsOfFile: path) {
-                    //4
-                    image = UIImage(data: imageData)
+//  func loadCoverPhoto(completion:(photo: UIImage!) -> ()) {
+//    // 1
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
+//        var image: UIImage!
+//        //2
+//        if let asset = self.record.objectForKey("CoverPhoto") as? CKAsset {
+//            let url = asset.fileURL
+//            let path = url.path
+//            if let path = path {
+//                if let imageData = NSData(contentsOfFile: path) {
+//                    //4
+//                    image = UIImage(data: imageData)
+//                }
+//            }
+//        }
+//        completion(photo: image)
+//    }
+//    }
+    
+    func loadCoverPhoto(completion:(photo: UIImage!) ->()) {
+        let backgroundQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)
+        //1
+        dispatch_async(backgroundQueue) {
+            //2 
+            let imagePath = self.imageCachePath()
+            //3
+            if NSFileManager.defaultManager().fileExistsAtPath(imagePath) {
+                //4
+                let image = UIImage(contentsOfFile: imagePath)
+                //5
+                dispatch_async(dispatch_get_main_queue()) {
+                    completion(photo: image)
                 }
+            } else {
+                //6
+                let fetchOP = CKFetchRecordsOperation(recordIDs: [self.record.recordID])
+                
+                //7
+                fetchOP.desiredKeys = ["CoverPhoto"]
+                fetchOP.fetchRecordsCompletionBlock = {
+                    records, error in
+                    //8
+                    self.processAsset(records, error: error, completion: completion)
+                }
+                //9 
+                self.database.addOperation(fetchOP)
             }
         }
-        completion(photo: image)
     }
+    
+    func imageCachePath() -> String {
+        let paths = NSSearchPathForDirectoriesInDomains(.CachesDirectory, .UserDomainMask, true)
+        
+        let path = paths[0].stringByAppendingString(record.recordID.recordName)
+        
+        return path
     }
 
+    func processAsset(records: [NSObject : AnyObject]!, error: NSError!, completion: (photo: UIImage!) -> ()) {
+        //1
+        if error != nil {
+            completion(photo: nil)
+            return
+        }
+        //2
+        let updatedRecord = records[self.record.recordID] as! CKRecord
+        
+        //3
+        if let asset = updatedRecord.objectForKey("CoverPhoto") as? CKAsset {
+            //4
+            let url = asset.fileURL
+            let im = UIImage(contentsOfFile: url.path!)
+            //5
+            do {
+                try NSFileManager.defaultManager().copyItemAtPath(url.path!, toPath: self.imageCachePath())
+            } catch {
+                print("There was an error saving image \(error)")
+            }
+            
+            //6
+            dispatch_async(dispatch_get_main_queue()) {
+                completion(photo: im)
+            }
+        } else {
+            dispatch_async(dispatch_get_main_queue()) {
+                completion(photo: nil)
+            }
+        }
+        
+    }
   
   //MARK: - map annotation
   

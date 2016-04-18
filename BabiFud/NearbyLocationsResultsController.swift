@@ -201,6 +201,8 @@ class NearbyLocationsResultsController {
     
     
     func start() {
+    
+        
         //1 
         if inProgress {
             return
@@ -209,6 +211,7 @@ class NearbyLocationsResultsController {
         //2
         let query = CKQuery(recordType: RecordType, predicate: predicate!)
         let queryOp = CKQueryOperation(query: query)
+        queryOp.desiredKeys = ["Name", "Location", "HealthyOption", "KidsMenu"]
         
         sendOperation(queryOp)
         print("NearbyLocationsResultsController Start method called")
