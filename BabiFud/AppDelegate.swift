@@ -42,7 +42,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let masterNav = splitViewController.viewControllers[0] as! UINavigationController
     masterViewController = masterNav.topViewController as! MasterViewController
     
-    application.registerForRemoteNotifications()
+    
+    //Testing Push Notifications
+    let notificationSettings = UIUserNotificationSettings(forTypes: [.Alert, .Sound], categories: nil)
+    UIApplication.sharedApplication().registerUserNotificationSettings(notificationSettings)
+    UIApplication.sharedApplication().registerForRemoteNotifications()
+    
+    
+//    application.registerForRemoteNotifications()
 
     return true
   }
@@ -58,6 +65,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
         let note = CKQueryNotification(fromRemoteNotificationDictionary: userInfo as! [String: NSObject])
         masterViewController.controller.handleNotification(note)
+        
+        if let pushInfo = userInfo as? [String:NSObject] {
+            let notification = CKNotification(fromRemoteNotificationDictionary: pushInfo)
+            print("Received Notification")
+            let ac = UIAlertController(title: "New Updates", message: notification.alertBody, preferredStyle: .Alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+            
+            if let nc = window?.rootViewController as? UINavigationController {
+                if let vc = nc.visibleViewController {
+                    vc.presentViewController(ac, animated: true, completion: nil)
+                }
+            }
+        }
     }
 
 }

@@ -78,9 +78,17 @@ class NearbyLocationsResultsController {
         //3
         let subscription = CKSubscription(recordType: RecordType, predicate: predicate!, options:  [.FiresOnRecordCreation, .FiresOnRecordUpdate, .FiresOnRecordDeletion])
         
+        
+        //Testing Push Notifications
+        let notification = CKNotificationInfo()
+        notification.alertBody = "There is a new change on an Establishment \(RecordType)"
+        notification.soundName = UILocalNotificationDefaultSoundName
+        
+        subscription.notificationInfo = notification
+        
         //4
-        subscription.notificationInfo = CKNotificationInfo()
-        subscription.notificationInfo?.alertBody = "Test" //added test
+//        subscription.notificationInfo = CKNotificationInfo()
+//        subscription.notificationInfo?.alertBody = "Test" //added test
         
         //5
         db.saveSubscription(subscription) { subscription, error in
